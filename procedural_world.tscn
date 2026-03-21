@@ -1,0 +1,74 @@
+[gd_scene format=3 uid="uid://bgnktsjn05ap0"]
+
+[ext_resource type="Script" uid="uid://bwtrd4whr0bp4" path="res://procedural_world.gd" id="1_dw5o5"]
+[ext_resource type="Script" uid="uid://dm23x7vs3b1nq" path="res://world_mesh_generator.gd" id="2_52b8m"]
+[ext_resource type="Material" uid="uid://gnfc5ldpi5tt" path="res://materials/terrain_material.tres" id="3_lm6y6"]
+[ext_resource type="PackedScene" uid="uid://dufnmutrtkx1i" path="res://player/player.tscn" id="4_thyat"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_thyat"]
+
+[sub_resource type="Sky" id="Sky_lm6y6"]
+sky_material = SubResource("ProceduralSkyMaterial_thyat")
+
+[sub_resource type="Environment" id="Environment_u206h"]
+background_mode = 2
+sky = SubResource("Sky_lm6y6")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_thyat"]
+albedo_color = Color(0.22745098, 0.5176471, 0.8784314, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_lm6y6"]
+material = SubResource("StandardMaterial3D_thyat")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u206h"]
+albedo_color = Color(0.5372549, 0.81960785, 0.21568628, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fiohh"]
+material = SubResource("StandardMaterial3D_u206h")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a1s0b"]
+albedo_color = Color(0.91764706, 0.20392157, 0.3137255, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_1furb"]
+material = SubResource("StandardMaterial3D_a1s0b")
+
+[node name="ProceduralWorld" type="Node3D" unique_id=1457936442 node_paths=PackedStringArray("world_mesh_generator")]
+script = ExtResource("1_dw5o5")
+world_mesh_generator = NodePath("WorldMeshGenerator")
+
+[node name="WorldMeshGenerator" type="Node3D" parent="." unique_id=2143711905]
+script = ExtResource("2_52b8m")
+terrain_material = ExtResource("3_lm6y6")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1731846848]
+transform = Transform3D(1, 0, 0, 0, 0.84668565, 0.5320932, 0, -0.53209335, 0.84668577, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=400546427]
+environment = SubResource("Environment_u206h")
+
+[node name="Node3D4" type="Node3D" parent="." unique_id=880032646]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.2982855, 0)
+
+[node name="Node3D" type="Node3D" parent="Node3D4" unique_id=1858721360]
+transform = Transform3D(2.175, 0, 0, 0, 2.175, 0, 0, 0, 17.161, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D4/Node3D" unique_id=1023441182]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 1, 0, 0, 0.5019256)
+mesh = SubResource("BoxMesh_lm6y6")
+
+[node name="Node3D2" type="Node3D" parent="Node3D4" unique_id=798253074]
+transform = Transform3D(2.175, 0, 0, 0, -9.507227e-08, 17.161, 0, -2.175, -7.501311e-07, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D4/Node3D2" unique_id=1677458005]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 1, 0, 0, 0.5019256)
+mesh = SubResource("BoxMesh_fiohh")
+
+[node name="Node3D3" type="Node3D" parent="Node3D4" unique_id=409260383]
+transform = Transform3D(-9.507227e-08, -9.507226e-08, 17.161, -2.175, -3.5714115e-15, -7.501311e-07, 0, -2.175, -7.5013105e-07, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D4/Node3D3" unique_id=1394153220]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 1, 0, 0, 0.5019256)
+mesh = SubResource("BoxMesh_1furb")
+
+[node name="Player" parent="." unique_id=1351164981 instance=ExtResource("4_thyat")]
