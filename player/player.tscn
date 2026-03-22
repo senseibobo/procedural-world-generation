@@ -6,6 +6,7 @@
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_thyat"]
 
 [node name="Player" type="CharacterBody3D" unique_id=1351164981 node_paths=PackedStringArray("camera")]
+floor_max_angle = 1.314233
 script = ExtResource("1_oul6g")
 camera = NodePath("Camera3D")
 

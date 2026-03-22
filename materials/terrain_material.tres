@@ -1,7 +1,14 @@
 [gd_resource type="ShaderMaterial" format=3 uid="uid://gnfc5ldpi5tt"]
 
 [ext_resource type="Shader" uid="uid://d11h3h2ss57x6" path="res://materials/shaders/terrain.gdshader" id="1_a5vyf"]
+[ext_resource type="Texture2D" uid="uid://c1h23u1gm7q5g" path="res://materials/textures/grass_texture.png" id="2_tjm3o"]
+[ext_resource type="Texture2D" uid="uid://bbkl3sdt57xg5" path="res://materials/textures/rock_texture.jpg" id="3_8wu7q"]
 
 [resource]
 render_priority = 0
 shader = ExtResource("1_a5vyf")
+shader_parameter/grass_texture = ExtResource("2_tjm3o")
+shader_parameter/rock_texture = ExtResource("3_8wu7q")
+shader_parameter/uv1_blend_sharpness = 0.585
+shader_parameter/uv1_scale = Vector3(0.25, 0.25, 0.25)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)

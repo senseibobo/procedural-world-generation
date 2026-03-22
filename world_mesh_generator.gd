@@ -9,11 +9,13 @@ enum StitchFace {
 	Z_POS = 8,
 }
 
+var triangles: int = 0
+
 
 const LOD_LEVELS: int = 5
-const CHUNK_SIZE: float = 48.00
+const CHUNK_SIZE: float = 42.00
 const TERRAIN_HEIGHT: float = 30.0
-const BASE_SUBDIVISIONS: int = 30
+const BASE_SUBDIVISIONS: int = 48
 
 var mutex := Mutex.new()
 var update_mesh_instances_thread := Thread.new()
@@ -58,8 +60,6 @@ func _process(delta: float) -> void:
 func _init_mesh_instances():
 	for lod_level in LOD_LEVELS:
 		var p: int = -(pow(3, lod_level) - 1) / 2
-		if lod_level == 3: p = -13
-		if lod_level == 4: p = -40
 		var c: int = pow(3,lod_level)
 		for x in 3:
 			for z in 3:
@@ -71,8 +71,8 @@ func _init_mesh_instances():
 				mesh_instances[q].global_position = Vector3()
 				#mesh_instances[q].global_position = Vector3(q.x, 0.0, q.y) * CHUNK_SIZE * c
 				var mat := StandardMaterial3D.new()
-				mat.albedo_color = Color(lod_level/float(LOD_LEVELS), 0, 0)
-				mesh_instances[q].material_overlay = mat
+				#mat.albedo_color = Color(lod_level/float(LOD_LEVELS), 0, 0)
+				mesh_instances[q].material_overlay = terrain_material
 	mesh_instances_initiated = true
 
 
@@ -80,6 +80,7 @@ func update_mesh_instances(cq: Vector2i):
 	print("updatin")
 	mutex.lock()
 	mesh_instances_updating = true
+	triangles = 0
 	for lod_level in LOD_LEVELS:
 		var p: int = -(pow(3, lod_level) - 1) / 2
 		var c: int = pow(3,lod_level)
@@ -98,7 +99,7 @@ func update_mesh_instances(cq: Vector2i):
 				updated_meshes[q] = create_mesh(Vector2(world_pos.x, world_pos.z), lod_level, stitch_at)
 	mesh_instances_updated = true
 	mutex.unlock()
-	print("updated")
+	print("updated ", triangles, "triangles")
 
 func get_lod_level(q: Vector2i):
 	return max(0,max(abs(q.x), abs(q.y))-1)
@@ -163,6 +164,7 @@ func create_mesh(world_pos: Vector2, lod_level: int, stitch_at: int):
 			st.add_vertex(Vector3(pos_x, pxpzy, pos_z))
 			st.set_normal(get_normal(neg_x,pos_z,m/2.0))
 			st.add_vertex(Vector3(neg_x, nxpzy, pos_z))
+			triangles += 2
 	return st.commit()
 
 
@@ -188,6 +190,8 @@ func stitch_edge(x: int, z: int, world_pos: Vector2, m: float, fixed_val: float,
 	var t1: float = float(var_id % stitch_res + 1) / float(stitch_res)
 	return [lerp(fnxpzy, lnxpzy, t0),lerp(fnxpzy, lnxpzy, t1)]
 	#returns negative then positive side
+	#fnxpzy and lnxpzy are the first and last point of the interpolated axis, I didn't know what to
+	#name them after testing the first case.
 
 
 func sample_noise(x: float, z: float):
