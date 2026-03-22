@@ -17,7 +17,7 @@ func _ready():
 
 
 func _physics_process(delta):
-	var noise: FastNoiseLite = ProceduralWorld.noise
+	var noise: FastNoiseLite = ProceduralWorld.terrain_noise
 	var faces: PackedVector3Array
 	var m: float = WorldMeshGenerator.CHUNK_SIZE/WorldMeshGenerator.BASE_SUBDIVISIONS 
 	var pp: Vector3 = get_parent().global_position

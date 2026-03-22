@@ -151,22 +151,42 @@ func create_mesh(world_pos: Vector2, lod_level: int, stitch_at: int):
 			#if x == subdivisions-1 and (stitch_at & StitchFace.X_POS): z = snappedi(z, 4); mz *= 4.0
 			#if z == subdivisions-1 and (stitch_at & StitchFace.Z_POS): x = snappedi(x, 4); mx *= 4.0
 			
-			
-			st.set_normal(get_normal(neg_x,neg_z,m/2.0))
+			st.set_color(get_biome_vertex_color(neg_x, neg_z))
+			st.set_normal(get_normal(neg_x,neg_z,m))
 			st.add_vertex(Vector3(neg_x, nxnzy, neg_z))
-			st.set_normal(get_normal(pos_x,neg_z,m/2.0))
+			
+			st.set_color(get_biome_vertex_color(pos_x, neg_z))
+			st.set_normal(get_normal(pos_x,neg_z,m))
 			st.add_vertex(Vector3(pos_x, pxnzy, neg_z))
-			st.set_normal(get_normal(neg_x,pos_z,m/2.0))
+			
+			st.set_color(get_biome_vertex_color(neg_x, pos_z))
+			st.set_normal(get_normal(neg_x,pos_z,m))
 			st.add_vertex(Vector3(neg_x, nxpzy, pos_z))
-			st.set_normal(get_normal(pos_x,neg_z,m/2.0))
+			
+			st.set_color(get_biome_vertex_color(pos_x, neg_z))
+			st.set_normal(get_normal(pos_x,neg_z,m))
 			st.add_vertex(Vector3(pos_x, pxnzy, neg_z))
-			st.set_normal(get_normal(pos_x,pos_z,m/2.0))
+			
+			st.set_color(get_biome_vertex_color(pos_x, pos_z))
+			st.set_normal(get_normal(pos_x,pos_z,m))
 			st.add_vertex(Vector3(pos_x, pxpzy, pos_z))
-			st.set_normal(get_normal(neg_x,pos_z,m/2.0))
+			
+			st.set_color(get_biome_vertex_color(neg_x, pos_z))
+			st.set_normal(get_normal(neg_x,pos_z,m))
 			st.add_vertex(Vector3(neg_x, nxpzy, pos_z))
 			triangles += 2
 	return st.commit()
 
+
+
+func get_biome_vertex_color(x: float, z: float) -> Color:
+	var temperature: float = ProceduralWorld.temperature_noise.get_noise_2d(x,z)
+	var humidity: float = ProceduralWorld.humidity_noise.get_noise_2d(x,z)
+	
+	var i_temp: int = int(lerp(0, 15, temperature))
+	var i_hum: int = int(lerp(0, 15, humidity))
+	
+	return Color.from_rgba8(i_hum + 16*i_temp, 0, 0, 255)
 
 
 func stitch_edge(x: int, z: int, world_pos: Vector2, m: float, fixed_val: float, interpolate: int):

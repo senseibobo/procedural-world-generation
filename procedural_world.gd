@@ -2,9 +2,13 @@ class_name ProceduralWorld
 extends Node3D
 
 
-static var noise: FastNoiseLite
+static var terrain_noise: FastNoiseLite
+static var temperature_noise: FastNoiseLite
+static var humidity_noise: FastNoiseLite
 
-@export var noisee: FastNoiseLite
+@export var _terrain_noise: FastNoiseLite
+@export var _temperature_noise: FastNoiseLite
+@export var _humidity_noise: FastNoiseLite
 @export var world_mesh_generator: WorldMeshGenerator
 
 
@@ -14,8 +18,10 @@ func _init():
 
 		
 func _ready():
-	noise = noisee
-	world_mesh_generator.noise = noise
+	terrain_noise = _terrain_noise
+	temperature_noise = _temperature_noise
+	humidity_noise = _humidity_noise
+	world_mesh_generator.noise = _terrain_noise
 
 
 func _input(event):
