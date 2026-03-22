@@ -5,6 +5,8 @@
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_thyat"]
 
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_rkbax"]
+
 [node name="Player" type="CharacterBody3D" unique_id=1351164981 node_paths=PackedStringArray("camera")]
 floor_max_angle = 1.314233
 script = ExtResource("1_oul6g")
@@ -20,3 +22,7 @@ shape = SubResource("CapsuleShape3D_thyat")
 [node name="WorldCollision" type="StaticBody3D" parent="." unique_id=1704667868]
 script = ExtResource("2_rkbax")
 metadata/_custom_type_script = "uid://dlhcefja872yu"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1735586973]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_rkbax")

@@ -4,6 +4,7 @@ shader_type spatial;
 uniform sampler2D grass_texture;
 uniform sampler2D rock_texture;
 
+
 varying vec3 uv1_triplanar_pos;
 varying vec3 uv1_power_normal;
 uniform float uv1_blend_sharpness = 0.1;

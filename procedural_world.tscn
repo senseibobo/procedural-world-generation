@@ -27,6 +27,7 @@ sky_material = SubResource("ProceduralSkyMaterial_thyat")
 [sub_resource type="Environment" id="Environment_u206h"]
 background_mode = 2
 sky = SubResource("Sky_lm6y6")
+glow_enabled = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_thyat"]
 albedo_color = Color(0.22745098, 0.5176471, 0.8784314, 1)
@@ -146,10 +147,10 @@ as_normal_map = true
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_u206h"]
 render_priority = 0
 shader = ExtResource("5_lm6y6")
-shader_parameter/shallow_color = Color(0.47, 0.47, 0.47, 1)
-shader_parameter/deep_color = Color(0.2982, 0.42, 0.34692, 1)
-shader_parameter/clarity = 0.59
-shader_parameter/wave_speed = 5.295
+shader_parameter/shallow_color = Color(0, 0.35116664, 0.43, 1)
+shader_parameter/deep_color = Color(0.37768263, 0.412248, 0.14039776, 1)
+shader_parameter/clarity = 0.11
+shader_parameter/wave_speed = 5.085
 shader_parameter/wave_strength = 0.29
 shader_parameter/normal_map = SubResource("NoiseTexture2D_u206h")
 
@@ -210,9 +211,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25.033535, 0)
 material_override = SubResource("ShaderMaterial_lm6y6")
 
 [node name="WaterLayer" type="MeshInstance3D" parent="." unique_id=2126996297]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4595222, 0)
 mesh = SubResource("PlaneMesh_fiohh")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1596770053]
 transform = Transform3D(-0.39311385, 0.7742333, -0.49600863, -0.16059685, 0.47333294, 0.8661203, 0.90535635, 0.42014125, -0.06173421, 0, 2.0627575, -0.06437969)
 mesh = SubResource("TextMesh_lm6y6")
+
+[node name="ReflectionProbe" type="ReflectionProbe" parent="." unique_id=1134910020]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1140671, 1.7159424)
+update_mode = 1
+size = Vector3(112.33423, 20, 131.4602)

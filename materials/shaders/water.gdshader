@@ -30,14 +30,17 @@ void fragment() {
 	float thickness = terrain_depth - water_depth;
 	float depth_factor = exp(-thickness * clarity);
 	depth_factor = min(depth_factor, 1.0);
+	vec3 normal_a = texture(normal_map, UV*4.0 + TIME/10.0).rgb * 2.0 - 1.0;
+	vec2 refract_offset = normal_a.xy * 0.05;
+	
+	vec4 screen = texture(SCREEN_TEXTURE, SCREEN_UV + refract_offset);
 	
 	ALBEDO = mix(deep_color, shallow_color, depth_factor);
+	ALBEDO = mix(ALBEDO, screen.rgb, depth_factor);
 	
-	ALPHA = 1.0-depth_factor;
-	ALPHA = clamp(ALPHA + step(-0.4,-thickness), 0.0, 1.0);
 	ALBEDO = clamp(ALBEDO + step(-0.4, -thickness), vec3(0.0), vec3(1.0));
 	SPECULAR = 0.6;
 	METALLIC = 0.0;
-	ROUGHNESS = 0.6;
-	NORMAL_MAP = texture(normal_map, UV*10.0 + TIME/10.0).rgb;
+	ROUGHNESS = 0.3;
+	NORMAL_MAP = texture(normal_map, UV*4.0 + TIME/10.0).rgb;
 }
