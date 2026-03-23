@@ -180,13 +180,41 @@ func create_mesh(world_pos: Vector2, lod_level: int, stitch_at: int):
 
 
 func get_biome_vertex_color(x: float, z: float) -> Color:
-	var temperature: float = ProceduralWorld.temperature_noise.get_noise_2d(x,z)
-	var humidity: float = ProceduralWorld.humidity_noise.get_noise_2d(x,z)
+	var temperature: float = clamp(ProceduralWorld.temperature_noise.get_noise_2d(x,z) * 0.5 + 0.5, 0.0, 1.0)*15.0
+	var humidity: float = clamp(ProceduralWorld.humidity_noise.get_noise_2d(x,z) * 0.5 + 0.5, 0.0, 1.0)*15.0
 	
-	var i_temp: int = int(lerp(0, 15, temperature))
-	var i_hum: int = int(lerp(0, 15, humidity))
+	var temperature_id: int = int(temperature)/4
+	var humidity_id: int = int(humidity)/8
+
+	var main_biome_id: int = get_biome_id(temperature_id, humidity_id)
 	
-	return Color.from_rgba8(i_hum + 16*i_temp, 0, 0, 255)
+	var frac_temp: float = (fmod(temperature,4.0)-2.0)/2.0
+	var frac_hum: float = (fmod(humidity,8.0)-4.0)/4.0
+	
+	var second_biome_temperature_id: int = temperature_id
+	var second_biome_humidity_id: int = humidity_id
+	if (frac_temp < 0 and temperature_id == 0) or (frac_temp > 0 and temperature_id == 3): frac_temp = 0
+	if (frac_hum < 0 and humidity_id == 0) or (frac_hum > 0 and humidity_id == 1): frac_hum = 0
+	if abs(frac_temp) > abs(frac_hum):
+		second_biome_temperature_id += sign(frac_temp)
+	elif abs(frac_hum) > abs(frac_temp):
+		second_biome_humidity_id += sign(frac_hum)
+	
+	var second_biome_id: int = get_biome_id(second_biome_temperature_id, second_biome_humidity_id)
+	
+	var blend = max(abs(frac_temp), abs(frac_hum))
+	blend = clamp((blend-0.9)*10.0,0.0,1.0)*0.5
+	
+	
+	return Color.from_rgba8(main_biome_id*32, second_biome_id*32, int(blend*255.0), 255)
+
+
+func get_biome_id(temperature_id: int, humidity_id: int):
+	match temperature_id:
+		0: return 7 if humidity_id == 1 else 3
+		1: return 6 if humidity_id == 1 else 2
+		2: return 5 if humidity_id == 1 else 1
+		3: return 4 if humidity_id == 1 else 0
 
 
 func stitch_edge(x: int, z: int, world_pos: Vector2, m: float, fixed_val: float, interpolate: int):

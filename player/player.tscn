@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://dlhcefja872yu" path="res://world_collision.gd" id="2_rkbax"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_thyat"]
+height = 27.254272
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_rkbax"]
 
@@ -16,7 +17,7 @@ camera = NodePath("Camera3D")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7096679, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1414313523]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.627136, 0)
 shape = SubResource("CapsuleShape3D_thyat")
 
 [node name="WorldCollision" type="StaticBody3D" parent="." unique_id=1704667868]

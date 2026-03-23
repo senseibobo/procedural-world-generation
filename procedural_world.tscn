@@ -9,13 +9,18 @@
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_u206h"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fiohh"]
-frequency = 0.0001
-fractal_gain = 9.52
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_a1s0b"]
-noise_type = 4
+noise_type = 2
 seed = 1
 frequency = 0.0001
+offset = Vector3(1.1, 0, 0)
+fractal_type = 2
+fractal_lacunarity = 1.725
+fractal_gain = 25.47
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_a1s0b"]
+noise_type = 2
+frequency = 0.0001
+offset = Vector3(1.1, 0, 0)
 fractal_type = 2
 fractal_lacunarity = 1.725
 fractal_gain = 25.47
