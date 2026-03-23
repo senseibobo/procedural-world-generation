@@ -15,6 +15,10 @@ run/main_scene="uid://bgnktsjn05ap0"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+BiomeManager="*uid://dwfl67hg1v7j2"
+
 [debug]
 
 gdscript/warnings/integer_division=0

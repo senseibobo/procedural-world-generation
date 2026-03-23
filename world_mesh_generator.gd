@@ -13,25 +13,27 @@ var triangles: int = 0
 
 
 const LOD_LEVELS: int = 5
-const CHUNK_SIZE: float = 42.00
+const CHUNK_SIZE: float = 30.0
 const TERRAIN_HEIGHT: float = 30.0
-const BASE_SUBDIVISIONS: int = 48
+const BASE_SUBDIVISIONS: int = 24
+const WATER_LEVEL: float = 0.0
 
 var mutex := Mutex.new()
 var update_mesh_instances_thread := Thread.new()
 
-
-
 @export var noise: FastNoiseLite
 @export var terrain_material: ShaderMaterial
+@export var water_material: ShaderMaterial
 
 var old_cq: Vector2i = Vector2i.MIN
 var mesh_instances_initiated: bool = false
 
 var mesh_instances: Dictionary[Vector2i, MeshInstance3D]
+var water_mesh_instances: Dictionary[Vector2i, MeshInstance3D]
 var mesh_instances_updating: bool = false
 var mesh_instances_updated: bool = false
 var updated_meshes: Dictionary[Vector2i, ArrayMesh]
+var updated_water_meshes: Dictionary[Vector2i, ArrayMesh]
 
 
 func _ready():
@@ -46,6 +48,7 @@ func _process(delta: float) -> void:
 		var cq := Vector2i(floor(camera.global_position.x/CHUNK_SIZE), floor(camera.global_position.z/CHUNK_SIZE))
 		if cq != old_cq and not mesh_instances_updating:
 			updated_meshes.clear()
+			updated_water_meshes.clear()
 			update_mesh_instances_thread.start(update_mesh_instances.bind(cq))
 			old_cq = cq
 		if mesh_instances_updating and mesh_instances_updated:
@@ -55,6 +58,7 @@ func _process(delta: float) -> void:
 			mesh_instances_updated = false
 			for q in updated_meshes:
 				mesh_instances[q].mesh = updated_meshes[q]
+				water_mesh_instances[q].mesh = updated_water_meshes[q]
 			updated_meshes.clear()
 
 func _init_mesh_instances():
@@ -67,12 +71,16 @@ func _init_mesh_instances():
 				var q := Vector2i((x-1)*c+p, (z-1)*c+p)
 				#var c: float = pow(3,lod_level)
 				mesh_instances[q] = MeshInstance3D.new()
+				water_mesh_instances[q] = MeshInstance3D.new()
 				add_child(mesh_instances[q])
+				add_child(water_mesh_instances[q])
 				mesh_instances[q].global_position = Vector3()
+				mesh_instances[q].material_override = terrain_material
+				water_mesh_instances[q].global_position = Vector3()
+				water_mesh_instances[q].material_override = water_material
 				#mesh_instances[q].global_position = Vector3(q.x, 0.0, q.y) * CHUNK_SIZE * c
-				var mat := StandardMaterial3D.new()
 				#mat.albedo_color = Color(lod_level/float(LOD_LEVELS), 0, 0)
-				mesh_instances[q].material_overlay = terrain_material
+				
 	mesh_instances_initiated = true
 
 
@@ -97,6 +105,7 @@ func update_mesh_instances(cq: Vector2i):
 				
 				var world_pos: Vector3 = Vector3(q.x+cq.x, 0.0, q.y+cq.y) * CHUNK_SIZE
 				updated_meshes[q] = create_mesh(Vector2(world_pos.x, world_pos.z), lod_level, stitch_at)
+				updated_water_meshes[q] = create_water_mesh(Vector2(world_pos.x, world_pos.z), lod_level)
 	mesh_instances_updated = true
 	mutex.unlock()
 	print("updated ", triangles, "triangles")
@@ -106,11 +115,6 @@ func get_lod_level(q: Vector2i):
 
 
 func create_mesh(world_pos: Vector2, lod_level: int, stitch_at: int):
-	#print(world_pos, ": ", 
-		#stitch_at & StitchFace.X_NEG,
-		#stitch_at & StitchFace.X_POS,
-		#stitch_at & StitchFace.Z_NEG,
-		#stitch_at & StitchFace.Z_POS)
 	var subdivisions: int = BASE_SUBDIVISIONS
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -178,18 +182,66 @@ func create_mesh(world_pos: Vector2, lod_level: int, stitch_at: int):
 	return st.commit()
 
 
+func create_water_mesh(world_pos: Vector2, lod_level: int):
+	var subdivisions: int = BASE_SUBDIVISIONS
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var c: float = pow(3,lod_level)
+	var m: float = float(CHUNK_SIZE*c) / float(subdivisions)
+	for x in subdivisions:
+		for z in subdivisions:
+			var wvp: Vector2 = world_pos + Vector2(x,z)*m
+			
+			var neg_x: float = wvp.x + 0
+			var pos_x: float = wvp.x + m
+			var neg_z: float = wvp.y + 0
+			var pos_z: float = wvp.y + m
+			
+			st.set_uv(Vector2(neg_x,neg_z))
+			st.set_color(get_biome_vertex_color(neg_x, neg_z))
+			st.set_normal(Vector3.UP)
+			st.add_vertex(Vector3(neg_x, WATER_LEVEL, neg_z))
+			
+			st.set_uv(Vector2(pos_x,neg_z))
+			st.set_color(get_biome_vertex_color(pos_x, neg_z))
+			st.set_normal(Vector3.UP)
+			st.add_vertex(Vector3(pos_x, WATER_LEVEL, neg_z))
+			
+			st.set_uv(Vector2(neg_x,pos_z))
+			st.set_color(get_biome_vertex_color(neg_x, pos_z))
+			st.set_normal(Vector3.UP)
+			st.add_vertex(Vector3(neg_x, WATER_LEVEL, pos_z))
+			
+			st.set_uv(Vector2(pos_x,neg_z))
+			st.set_color(get_biome_vertex_color(pos_x, neg_z))
+			st.set_normal(Vector3.UP)
+			st.add_vertex(Vector3(pos_x, WATER_LEVEL, neg_z))
+			
+			st.set_uv(Vector2(pos_x,pos_z))
+			st.set_color(get_biome_vertex_color(pos_x, pos_z))
+			st.set_normal(Vector3.UP)
+			st.add_vertex(Vector3(pos_x, WATER_LEVEL, pos_z))
+			
+			st.set_uv(Vector2(neg_x,pos_z))
+			st.set_color(get_biome_vertex_color(neg_x, pos_z))
+			st.set_normal(Vector3.UP)
+			st.add_vertex(Vector3(neg_x, WATER_LEVEL, pos_z))
+			triangles += 2
+	return st.commit()
+
 
 func get_biome_vertex_color(x: float, z: float) -> Color:
-	var temperature: float = clamp(ProceduralWorld.temperature_noise.get_noise_2d(x,z) * 0.5 + 0.5, 0.0, 1.0)*15.0
-	var humidity: float = clamp(ProceduralWorld.humidity_noise.get_noise_2d(x,z) * 0.5 + 0.5, 0.0, 1.0)*15.0
 	
-	var temperature_id: int = int(temperature)/4
-	var humidity_id: int = int(humidity)/8
+	var temperature: float = BiomeManager.get_temperature(x,z)
+	var humidity: float = BiomeManager.get_humidity(x,z)
+	
+	var temperature_id: int = BiomeManager.get_temperature_id(temperature)
+	var humidity_id: int = BiomeManager.get_humidity_id(humidity)
 
 	var main_biome_id: int = get_biome_id(temperature_id, humidity_id)
 	
-	var frac_temp: float = (fmod(temperature,4.0)-2.0)/2.0
-	var frac_hum: float = (fmod(humidity,8.0)-4.0)/4.0
+	var frac_temp: float = (fmod(temperature*8.0,2.0)-1.0)
+	var frac_hum: float = (fmod(humidity*4.0,2.0)-1.0)
 	
 	var second_biome_temperature_id: int = temperature_id
 	var second_biome_humidity_id: int = humidity_id
@@ -210,11 +262,7 @@ func get_biome_vertex_color(x: float, z: float) -> Color:
 
 
 func get_biome_id(temperature_id: int, humidity_id: int):
-	match temperature_id:
-		0: return 7 if humidity_id == 1 else 3
-		1: return 6 if humidity_id == 1 else 2
-		2: return 5 if humidity_id == 1 else 1
-		3: return 4 if humidity_id == 1 else 0
+	return (3-temperature_id)+humidity_id*4
 
 
 func stitch_edge(x: int, z: int, world_pos: Vector2, m: float, fixed_val: float, interpolate: int):

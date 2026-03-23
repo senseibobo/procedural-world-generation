@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://dm23x7vs3b1nq" path="res://world_mesh_generator.gd" id="2_52b8m"]
 [ext_resource type="Material" uid="uid://gnfc5ldpi5tt" path="res://materials/terrain_material.tres" id="3_lm6y6"]
 [ext_resource type="PackedScene" uid="uid://dufnmutrtkx1i" path="res://player/player.tscn" id="4_thyat"]
-[ext_resource type="Shader" uid="uid://b1qtbmwsus2y5" path="res://materials/shaders/water.gdshader" id="5_lm6y6"]
+[ext_resource type="Material" uid="uid://giw2v3frq7dl" path="res://materials/water_material.tres" id="5_lm6y6"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_u206h"]
 
@@ -140,32 +140,6 @@ shader_parameter/uv1_offset = Vector3(0, 0, 0)
 shader_parameter/uv2_scale = Vector3(0, 0, 0)
 shader_parameter/uv2_offset = Vector3(0, 0, 0)
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_lm6y6"]
-fractal_octaves = 10
-fractal_lacunarity = 2.055
-fractal_gain = 0.325
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_u206h"]
-noise = SubResource("FastNoiseLite_lm6y6")
-seamless = true
-as_normal_map = true
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_u206h"]
-render_priority = 0
-shader = ExtResource("5_lm6y6")
-shader_parameter/shallow_color = Color(0, 0.35116664, 0.43, 1)
-shader_parameter/deep_color = Color(0.37768263, 0.412248, 0.14039776, 1)
-shader_parameter/clarity = 0.11
-shader_parameter/wave_speed = 5.085
-shader_parameter/wave_strength = 0.29
-shader_parameter/normal_map = SubResource("NoiseTexture2D_u206h")
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_fiohh"]
-material = SubResource("ShaderMaterial_u206h")
-size = Vector2(100, 100)
-subdivide_width = 16
-subdivide_depth = 16
-
 [sub_resource type="TextMesh" id="TextMesh_lm6y6"]
 text = "najjaceeeee"
 font_size = 127
@@ -180,6 +154,7 @@ world_mesh_generator = NodePath("WorldMeshGenerator")
 [node name="WorldMeshGenerator" type="Node3D" parent="." unique_id=2143711905]
 script = ExtResource("2_52b8m")
 terrain_material = ExtResource("3_lm6y6")
+water_material = ExtResource("5_lm6y6")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1731846848]
 transform = Transform3D(1, 0, 0, 0, 0.84668565, 0.5320932, 0, -0.53209335, 0.84668577, 0, 0, 0)
@@ -217,9 +192,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25.033535, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=2098914892]
 material_override = SubResource("ShaderMaterial_lm6y6")
-
-[node name="WaterLayer" type="MeshInstance3D" parent="." unique_id=2126996297]
-mesh = SubResource("PlaneMesh_fiohh")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1596770053]
 transform = Transform3D(-0.39311385, 0.7742333, -0.49600863, -0.16059685, 0.47333294, 0.8661203, 0.90535635, 0.42014125, -0.06173421, 0, 2.0627575, -0.06437969)
