@@ -1,5 +1,5 @@
 shader_type spatial;
-
+#include "biomes.gdshaderinc"
 
 uniform sampler2DArray biome_textures;
 uniform sampler2D rock_texture;
@@ -29,13 +29,6 @@ vec4 triplanar_texture(sampler2DArray p_sampler, vec3 p_weights, vec3 p_triplana
 	samp += texture(p_sampler, vec3(p_triplanar_pos.xz,w)) * p_weights.y;
 	samp += texture(p_sampler, vec3(p_triplanar_pos.zy * vec2(-1.0, 1.0),w)) * p_weights.x;
 	return samp;
-}
-
-int get_biome_index(float color_val) {
-	int humidity = int(color_val*255.0)%16;
-	int temperature = int(color_val*255.0)/16;
-	int biome_index = (humidity / 8) + (temperature / 4)*2;
-	return biome_index;
 }
 
 void vertex() {

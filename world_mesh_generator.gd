@@ -58,6 +58,7 @@ func _process(delta: float) -> void:
 			mesh_instances_updated = false
 			for q in updated_meshes:
 				mesh_instances[q].mesh = updated_meshes[q]
+			for q in updated_water_meshes:
 				water_mesh_instances[q].mesh = updated_water_meshes[q]
 			updated_meshes.clear()
 
@@ -71,13 +72,16 @@ func _init_mesh_instances():
 				var q := Vector2i((x-1)*c+p, (z-1)*c+p)
 				#var c: float = pow(3,lod_level)
 				mesh_instances[q] = MeshInstance3D.new()
-				water_mesh_instances[q] = MeshInstance3D.new()
 				add_child(mesh_instances[q])
-				add_child(water_mesh_instances[q])
 				mesh_instances[q].global_position = Vector3()
 				mesh_instances[q].material_override = terrain_material
-				water_mesh_instances[q].global_position = Vector3()
-				water_mesh_instances[q].material_override = water_material
+	for x in 3:
+		for z in 3:
+			var q = Vector2i(x-1, z-1)
+			water_mesh_instances[q] = MeshInstance3D.new()
+			add_child(water_mesh_instances[q])
+			water_mesh_instances[q].global_position = Vector3()
+			water_mesh_instances[q].material_override = water_material
 				#mesh_instances[q].global_position = Vector3(q.x, 0.0, q.y) * CHUNK_SIZE * c
 				#mat.albedo_color = Color(lod_level/float(LOD_LEVELS), 0, 0)
 				
@@ -105,7 +109,13 @@ func update_mesh_instances(cq: Vector2i):
 				
 				var world_pos: Vector3 = Vector3(q.x+cq.x, 0.0, q.y+cq.y) * CHUNK_SIZE
 				updated_meshes[q] = create_mesh(Vector2(world_pos.x, world_pos.z), lod_level, stitch_at)
-				updated_water_meshes[q] = create_water_mesh(Vector2(world_pos.x, world_pos.z), lod_level)
+	
+	var water_chunk_size: float = CHUNK_SIZE*2.0
+	for x in 3:
+		for z in 3:
+			var q: Vector2i = Vector2i(x-1, z-1)
+			var world_pos: Vector2 = (q+cq/2)*water_chunk_size
+			updated_water_meshes[q] = create_water_mesh(world_pos, water_chunk_size)
 	mesh_instances_updated = true
 	mutex.unlock()
 	print("updated ", triangles, "triangles")
@@ -182,12 +192,11 @@ func create_mesh(world_pos: Vector2, lod_level: int, stitch_at: int):
 	return st.commit()
 
 
-func create_water_mesh(world_pos: Vector2, lod_level: int):
+func create_water_mesh(world_pos: Vector2, chunk_size):
 	var subdivisions: int = BASE_SUBDIVISIONS
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var c: float = pow(3,lod_level)
-	var m: float = float(CHUNK_SIZE*c) / float(subdivisions)
+	var m: float = float(chunk_size) / float(subdivisions)
 	for x in subdivisions:
 		for z in subdivisions:
 			var wvp: Vector2 = world_pos + Vector2(x,z)*m

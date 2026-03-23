@@ -2,6 +2,18 @@
 
 [ext_resource type="Shader" uid="uid://b1qtbmwsus2y5" path="res://materials/shaders/water.gdshader" id="1_eplgm"]
 
+[sub_resource type="Gradient" id="Gradient_eplgm"]
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_w7w6v"]
+gradient = SubResource("Gradient_eplgm")
+width = 8
+
+[sub_resource type="Gradient" id="Gradient_ngiwl"]
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_4vjy3"]
+gradient = SubResource("Gradient_ngiwl")
+width = 8
+
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_lm6y6"]
 frequency = 0.005
 fractal_octaves = 10
@@ -17,8 +29,8 @@ seamless_blend_skirt = 0.42
 [resource]
 render_priority = 0
 shader = ExtResource("1_eplgm")
-shader_parameter/shallow_color = Color(0, 0.35116664, 0.43, 1)
-shader_parameter/deep_color = Color(0.37768263, 0.412248, 0.14039776, 1)
+shader_parameter/biome_deep_colors = SubResource("GradientTexture1D_w7w6v")
+shader_parameter/biome_shallow_colors = SubResource("GradientTexture1D_4vjy3")
 shader_parameter/clarity = 0.075
 shader_parameter/wave_speed = 5.085
 shader_parameter/wave_strength = 0.065
